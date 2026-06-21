@@ -1,0 +1,253 @@
+import tkinter as tk
+from tkinter import ttk
+
+
+def zeige_startfenster(parent, titel, willkommen):
+    # 1. Ein neues, übergeordnetes Fenster erstellen
+    fenster = tk.Toplevel(parent)
+    fenster.title(titel)
+    fenster.configure(bg="#87A177")               # farbe mit der configure methode einstellen
+    fenster.geometry("800x600") 
+    fenster.transient(parent)                       # Window kann nicht angeklickt werden, solange das kleine Fenster offen ist
+    fenster.grab_set()
+    
+    text_label = tk.Label(fenster, text=willkommen, bg="#444031", fg="white", font=("Courier", 12), justify="center")
+    text_label.pack(pady=30, padx=15, expand=True)  # pack platziert widget auf die GuI
+    
+    ok_button = tk.Button(fenster, text="yeah!", bg="#87A177", fg="#444031", font=("Courier", 10, "bold"), width=10, command=fenster.destroy)        # mit destoy wird das fenster geschlossen
+    ok_button.pack(pady=5, anchor="n")
+
+
+
+class Window(tk.Tk):                                # Die erste class erstellt mir mein Fenster
+    def __init__(self, title, size):
+        
+        # Haupteinstellungen
+        super().__init__()
+        self.title("SpiderWeb")                           # String Titel des Programmes
+        self.geometry("1000x600")       # transform into String 
+        self.minsize(size[0],size[1])               # Fenter-Mindestgröße
+        self.configure(background="white")
+        self.resizable(width=False, height=False)   # Fenstergröße kann nicht verändert werden
+        
+        # Widgets
+        self.habits = Habit_Frame(self)             # Window ist die Parentclass von Habit_Frame und ToDo_Frame
+        self.toDos = ToDo_Frame(self)
+        quit_button = tk.Button(self, text="exit", font=("Courier", 10), bg="#F5F2C8", highlightthickness=0, command=self.destroy)
+        quit_button.pack(anchor="s")
+                
+        # Programm zu laufen bringen:
+        zeige_startfenster(self, "SpiderWeb", "Willkommen, ich bin dein neuer Helfer für den Alltag.\nBist du bereit, eine Routine zu finden\nund nie wieder deine wichtigsten Aufgaben zu vergessen?")
+        self.mainloop()
+
+
+
+class Habit_Frame(tk.Frame):                        # linker Frame 
+    def __init__(self, parent):
+        super().__init__(parent, bg="#87A177", padx=5, pady=5)
+        self.place(x=0, y=50, relwidth=0.5)         # x=0, y=0; Frame immer links, relwidth ist die relative Gewichtung auf die Fensterbreite
+
+        self.make_widgets()
+    
+    def update_progress(self):
+            total_habits = len(self.check_vars)
+    
+            checked_habits = sum(var.get() for var in self.check_vars)      # sum() zählt True als 1 und False as 0, mit .get() bekomme ich eben diese Werte, da True=abgehackt und False=leer
+    
+            prozent = (checked_habits / total_habits) * 100 if total_habits > 0 else 0
+            self.progress['value'] = prozent
+
+            self.prozent_label.config(text=f"Fortschritt: {int(prozent)}%")     # int für Ganzzahlen
+    
+    def make_widgets(self):
+
+    # widgets machen
+        habit_label0 = tk.Label(self, text="Karteikarten", font=("Courier", 10), background="white", padx=10, pady=5, anchor="w")       # pad...padding, anchor "w"...westlich fixiert
+        habit_label1 = tk.Label(self, text="Vorlesungen", font=("Courier", 10), background="white", padx=10, pady=5, anchor="w")
+        habit_label2 = tk.Label(self, text="Uni-Aufträge", font=("Courier", 10), background="white", padx=10, pady=5, anchor="w")
+        habit_label3 = tk.Label(self, text="gym", font=("Courier", 10), background="white", padx=10, pady=5, anchor="w")
+        habit_label4 = tk.Label(self, text="Proteinshake", font=("Courier", 10), background="white", padx=10, pady=5, anchor="w")
+        habit_label5 = tk.Label(self, text="Suplemente", font=("Courier", 10), background="white", padx=10, pady=5, anchor="w")
+        habit_label6 = tk.Label(self, text="dehnen", font=("Courier", 10), background="white", padx=10, pady=5, anchor="w")
+        habit_label7 = tk.Label(self, text="Physio-Übungen", font=("Courier", 10), background="white", padx=10, pady=5, anchor="w")
+        habit_label8 = tk.Label(self, text="aufräumen", font=("Courier", 10), background="white", padx=10, pady=5, anchor="w")
+        habit_label9 = tk.Label(self, text="Pflanzen gießen", font=("Courier", 10), background="white", padx=10, pady=5, anchor="w")
+
+        habit_check_var0 = tk.BooleanVar()
+        habit_check_var1 = tk.BooleanVar()          # Boolean Variable erzeugen
+        habit_check_var2 = tk.BooleanVar()
+        habit_check_var3 = tk.BooleanVar()
+        habit_check_var4 = tk.BooleanVar()
+        habit_check_var5 = tk.BooleanVar()
+        habit_check_var6 = tk.BooleanVar()
+        habit_check_var7 = tk.BooleanVar()
+        habit_check_var8 = tk.BooleanVar()
+        habit_check_var9 = tk.BooleanVar()
+        
+        def reset_checkmarks():
+            habit_check_var0.set(False)             # Funktion für command unten
+            habit_check_var1.set(False)             # alle Checkboxen nicht mehr abgehackt
+            habit_check_var1.set(False)
+            habit_check_var2.set(False)
+            habit_check_var3.set(False)
+            habit_check_var4.set(False)
+            habit_check_var5.set(False)
+            habit_check_var6.set(False)
+            habit_check_var7.set(False)
+            habit_check_var8.set(False)
+            habit_check_var9.set(False)
+
+            self.update_progress()
+
+        # Progressbar:
+        self.check_vars = [habit_check_var0, habit_check_var1, habit_check_var2, habit_check_var3, habit_check_var4, habit_check_var5, habit_check_var6, habit_check_var7, habit_check_var8, habit_check_var9]      # Variablen in Liste geben
+        self.progress = ttk.Progressbar(self, orient="horizontal", length=200, mode="determinate", maximum=100)     # maximum=100...100% ist der volle Balken sind
+        self.prozent_label = tk.Label(self, text="Fortschritt: 0%", font=("Courier", 12))       # Label für die Prozentanzeige
+        
+        
+        habit_check0 = tk.Checkbutton(self, compound="center", variable=habit_check_var0, padx=5, pady=5, bg="#87A177", highlightthickness=0, command=self.update_progress)       # Bool-Variable mit Checkbutton verlinken
+        habit_check1 = tk.Checkbutton(self, compound="center", variable=habit_check_var1, padx=5, pady=5, bg="#87A177", highlightthickness=0, command=self.update_progress)       # allen Checkbuttons den command übergeben, verknüpft Buttons zur Funktion
+        habit_check2 = tk.Checkbutton(self, compound="center", variable=habit_check_var2, padx=5, pady=5, bg="#87A177", highlightthickness=0, command=self.update_progress)
+        habit_check3 = tk.Checkbutton(self, compound="center", variable=habit_check_var3, padx=5, pady=5, bg="#87A177", highlightthickness=0, command=self.update_progress)
+        habit_check4 = tk.Checkbutton(self, compound="center", variable=habit_check_var4, padx=5, pady=5, bg="#87A177", highlightthickness=0, command=self.update_progress)
+        habit_check5 = tk.Checkbutton(self, compound="center", variable=habit_check_var5, padx=5, pady=5, bg="#87A177", highlightthickness=0, command=self.update_progress)
+        habit_check6 = tk.Checkbutton(self, compound="center", variable=habit_check_var6, padx=5, pady=5, bg="#87A177", highlightthickness=0, command=self.update_progress)
+        habit_check7 = tk.Checkbutton(self, compound="center", variable=habit_check_var7, padx=5, pady=5, bg="#87A177", highlightthickness=0, command=self.update_progress)
+        habit_check8 = tk.Checkbutton(self, compound="center", variable=habit_check_var8, padx=5, pady=5, bg="#87A177", highlightthickness=0, command=self.update_progress)
+        habit_check9 = tk.Checkbutton(self, compound="center", variable=habit_check_var9, padx=5, pady=5, bg="#87A177", highlightthickness=0, command=self.update_progress)
+
+        reset_button = tk.Button(self, text="reset", font=("Courier", 10), bg="#F5F2C8", highlightthickness=0, command=reset_checkmarks)       # Knopf um alle checkmarks leeren, mit der oben erstellten Funktion 
+
+    # 2x11 grid machen:
+        self.columnconfigure(0, weight=1, uniform="a")      # weight...Verhältnis von der ersten zur zweiten Spalte 1:5
+        self.columnconfigure(1, weight=5, uniform="a")
+        self.rowconfigure((0,1,2,3,4,5,6,7,8,9,10,11), weight=1, uniform="a")
+
+    # widgets in grid platzieren:
+        habit_label0.grid(column=1, row=0, sticky="w", ipady=0, ipadx=100)
+        habit_label1.grid(column=1, row=1, sticky="w", ipady=0, ipadx=100)
+        habit_label2.grid(column=1, row=2, sticky="w", ipady=0, ipadx=100)
+        habit_label3.grid(column=1, row=3, sticky="w", ipady=0, ipadx=100)
+        habit_label4.grid(column=1, row=4, sticky="w", ipady=0, ipadx=100)
+        habit_label5.grid(column=1, row=5, sticky="w", ipady=0, ipadx=100)
+        habit_label6.grid(column=1, row=6, sticky="w", ipady=0, ipadx=100)
+        habit_label7.grid(column=1, row=7, sticky="w", ipady=0, ipadx=100)
+        habit_label8.grid(column=1, row=8, sticky="w", ipady=0, ipadx=100)
+        habit_label9.grid(column=1, row=9, sticky="w", ipady=0, ipadx=100)
+
+        self.progress.grid(column=1, row=10, pady=5)
+        self.prozent_label.grid(column=1, row=11, pady=5)
+        
+        habit_check0.grid(column=0, row=0, sticky="e", ipady=3)
+        habit_check1.grid(column=0, row=1, sticky="e", ipady=3)
+        habit_check2.grid(column=0, row=2, sticky="e", ipady=3)
+        habit_check3.grid(column=0, row=3, sticky="e", ipady=3)
+        habit_check4.grid(column=0, row=4, sticky="e", ipady=3)
+        habit_check5.grid(column=0, row=5, sticky="e", ipady=3)
+        habit_check6.grid(column=0, row=6, sticky="e", ipady=3)
+        habit_check7.grid(column=0, row=7, sticky="e", ipady=3)
+        habit_check8.grid(column=0, row=8, sticky="e", ipady=3)
+        habit_check9.grid(column=0, row=9, sticky="e", ipady=3)
+
+        reset_button.grid(column=0, row=11)
+
+
+
+class ToDo_Frame(tk.Frame):                         # rechter Frame
+    def __init__(self, parent):            
+        super().__init__(parent, bg="#A9C796", padx=5, pady=5)
+        self.place(relx=0.5, y=50, relwidth=0.5)    # Frame immer rechts, relwidth ist die relative Gewichtung auf die Fensterbreite
+       
+        self.make_widgets2()
+
+    def make_widgets2(self):
+    # widgets machen:
+        toDo_entry0 = tk.Entry(self, background="white", justify="center", font=("Courier", 10))        # justify auf center gestellt, um von der Mitte aus zu schreiben
+        toDo_entry1 = tk.Entry(self, background="white", justify="center", font=("Courier", 10))
+        toDo_entry2 = tk.Entry(self, background="white", justify="center", font=("Courier", 10))
+        toDo_entry3 = tk.Entry(self, background="white", justify="center", font=("Courier", 10))
+        toDo_entry4 = tk.Entry(self, background="white", justify="center", font=("Courier", 10))
+        toDo_entry5 = tk.Entry(self, background="white", justify="center", font=("Courier", 10))
+        toDo_entry6 = tk.Entry(self, background="white", justify="center", font=("Courier", 10))
+        toDo_entry7 = tk.Entry(self, background="white", justify="center", font=("Courier", 10))
+        toDo_entry8 = tk.Entry(self, background="white", justify="center", font=("Courier", 10))
+        toDo_entry9 = tk.Entry(self, background="white", justify="center", font=("Courier", 10))
+
+        toDo_entry0.insert(0, "leere deinen Kopf von wichtigen Aufgaben!")        # Steht schon in der ersten Eingabezeile drinnen
+
+        toDo_check0 = tk.Checkbutton(self, compound="center", padx=5, pady=5, bg="#A9C796", highlightthickness=0)       
+        toDo_check1 = tk.Checkbutton(self, compound="center", padx=5, pady=5, bg="#A9C796", highlightthickness=0) 
+        toDo_check2 = tk.Checkbutton(self, compound="center", padx=5, pady=5, bg="#A9C796", highlightthickness=0) 
+        toDo_check3 = tk.Checkbutton(self, compound="center", padx=5, pady=5, bg="#A9C796", highlightthickness=0) 
+        toDo_check4 = tk.Checkbutton(self, compound="center", padx=5, pady=5, bg="#A9C796", highlightthickness=0) 
+        toDo_check5 = tk.Checkbutton(self, compound="center", padx=5, pady=5, bg="#A9C796", highlightthickness=0) 
+        toDo_check6 = tk.Checkbutton(self, compound="center", padx=5, pady=5, bg="#A9C796", highlightthickness=0) 
+        toDo_check7 = tk.Checkbutton(self, compound="center", padx=5, pady=5, bg="#A9C796", highlightthickness=0) 
+        toDo_check8 = tk.Checkbutton(self, compound="center", padx=5, pady=5, bg="#A9C796", highlightthickness=0) 
+        toDo_check9 = tk.Checkbutton(self, compound="center", padx=5, pady=5, bg="#A9C796", highlightthickness=0) 
+
+        def delete_input():                         # Funktion um getippte ToDos wieder zu löschen
+            toDo_entry0.delete(0, tk.END)           # (start bis ende) löschen mit methode delete
+            toDo_entry1.delete(0, tk.END)
+            toDo_entry2.delete(0, tk.END)
+            toDo_entry3.delete(0, tk.END)
+            toDo_entry4.delete(0, tk.END)
+            toDo_entry5.delete(0, tk.END)
+            toDo_entry6.delete(0, tk.END)
+            toDo_entry7.delete(0, tk.END)
+            toDo_entry8.delete(0, tk.END)
+            toDo_entry9.delete(0, tk.END)
+
+        clear_button0 = tk.Button(self, text="löschen", font=("Courier", 10), bg="#F5F2C8",padx=10, pady=8, highlightthickness=0, relief="groove", command=delete_input)
+        clear_button1 = tk.Button(self, text="löschen", font=("Courier", 10), bg="#F5F2C8",padx=10, pady=8, highlightthickness=0, relief="groove", command=delete_input)
+        clear_button2 = tk.Button(self, text="löschen", font=("Courier", 10), bg="#F5F2C8",padx=10, pady=8, highlightthickness=0, relief="groove", command=delete_input)
+        clear_button3 = tk.Button(self, text="löschen", font=("Courier", 10), bg="#F5F2C8",padx=10, pady=8, highlightthickness=0, relief="groove", command=delete_input)
+        clear_button4 = tk.Button(self, text="löschen", font=("Courier", 10), bg="#F5F2C8",padx=10, pady=8, highlightthickness=0, relief="groove", command=delete_input)
+        clear_button5 = tk.Button(self, text="löschen", font=("Courier", 10), bg="#F5F2C8",padx=10, pady=8, highlightthickness=0, relief="groove", command=delete_input)
+        clear_button6 = tk.Button(self, text="löschen", font=("Courier", 10), bg="#F5F2C8",padx=10, pady=8, highlightthickness=0, relief="groove", command=delete_input)
+        clear_button7 = tk.Button(self, text="löschen", font=("Courier", 10), bg="#F5F2C8",padx=10, pady=8, highlightthickness=0, relief="groove", command=delete_input)
+        clear_button8 = tk.Button(self, text="löschen", font=("Courier", 10), bg="#F5F2C8",padx=10, pady=8, highlightthickness=0, relief="groove", command=delete_input)
+        clear_button9 = tk.Button(self, text="löschen", font=("Courier", 10), bg="#F5F2C8",padx=10, pady=8, highlightthickness=0, relief="groove", command=delete_input)
+
+    # grid planen für 3x5 Gitter:
+        self.columnconfigure(0, weight=1)
+        self.columnconfigure(1, weight=4)
+        self.columnconfigure(2, weight=1)
+        self.rowconfigure((0,1,2,3,4,5,6,7,8,9,10,11), weight=1)
+
+    # widgets in grid platzieren:
+        toDo_entry0.grid(column=1, row=0, sticky="w", ipady=0, ipadx=100)
+        toDo_entry1.grid(column=1, row=1, sticky="w", ipady=0, ipadx=100)
+        toDo_entry2.grid(column=1, row=2, sticky="w", ipady=0, ipadx=100)
+        toDo_entry3.grid(column=1, row=3, sticky="w", ipady=0, ipadx=100)
+        toDo_entry4.grid(column=1, row=4, sticky="w", ipady=0, ipadx=100)
+        toDo_entry5.grid(column=1, row=5, sticky="w", ipady=0, ipadx=100)
+        toDo_entry6.grid(column=1, row=6, sticky="w", ipady=0, ipadx=100)
+        toDo_entry7.grid(column=1, row=7, sticky="w", ipady=0, ipadx=100)
+        toDo_entry8.grid(column=1, row=8, sticky="w", ipady=0, ipadx=100)
+        toDo_entry9.grid(column=1, row=9, sticky="w", ipady=0, ipadx=100)
+
+        toDo_check0.grid(column=0, row=0, sticky="e", ipady=3)
+        toDo_check1.grid(column=0, row=1, sticky="e", ipady=3)
+        toDo_check2.grid(column=0, row=2, sticky="e", ipady=3)
+        toDo_check3.grid(column=0, row=3, sticky="e", ipady=3)
+        toDo_check4.grid(column=0, row=4, sticky="e", ipady=3)
+        toDo_check5.grid(column=0, row=5, sticky="e", ipady=3)
+        toDo_check6.grid(column=0, row=6, sticky="e", ipady=3)
+        toDo_check7.grid(column=0, row=7, sticky="e", ipady=3)
+        toDo_check8.grid(column=0, row=8, sticky="e", ipady=3)
+        toDo_check9.grid(column=0, row=9, sticky="e", ipady=3)
+
+        clear_button0.grid(column=2, row=0, sticky="w", padx=5, pady=6, ipady=0, ipadx=5)
+        clear_button1.grid(column=2, row=1, sticky="w", padx=5, pady=6, ipady=0, ipadx=5)
+        clear_button2.grid(column=2, row=2, sticky="w", padx=5, pady=6, ipady=0, ipadx=5)
+        clear_button3.grid(column=2, row=3, sticky="w", padx=5, pady=6, ipady=0, ipadx=5)
+        clear_button4.grid(column=2, row=4, sticky="w", padx=5, pady=6, ipady=0, ipadx=5)
+        clear_button5.grid(column=2, row=5, sticky="w", padx=5, pady=6, ipady=0, ipadx=5)
+        clear_button6.grid(column=2, row=6, sticky="w", padx=5, pady=6, ipady=0, ipadx=5)
+        clear_button7.grid(column=2, row=7, sticky="w", padx=5, pady=6, ipady=0, ipadx=5)
+        clear_button8.grid(column=2, row=8, sticky="w", padx=5, pady=6, ipady=0, ipadx=5)
+        clear_button9.grid(column=2, row=9, sticky="w", padx=5, pady=6, ipady=0, ipadx=5)
+        
+
+Window("SpiderWeb", (1000,600))
